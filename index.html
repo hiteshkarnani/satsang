@@ -73,7 +73,9 @@ audio {
 
 <div class="header">🕉️ आज का सत्संग</div>
 
-<div class="container" id="content"></div>
+<div class="container" id="content">
+  <div style="text-align:center; margin-top:20px;">लोड हो रहा है...</div>
+</div>
 
 <div class="footer">सत्संग संग्रह</div>
 
@@ -82,7 +84,7 @@ fetch('data.json')
 .then(res => res.json())
 .then(data => {
 
-  // Latest first
+  // Sort latest first
   data.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   let html = '';
@@ -100,15 +102,17 @@ fetch('data.json')
     html += `
       <div class="card">
         <div class="date">📅 ${formatted}</div>
-        <audio controls>
-          <source src="${item.audio}" type="audio/mpeg">
-        </audio>
+        <audio controls src="${item.audio}"></audio>
         <div class="text">${item.text}</div>
       </div>
     `;
   });
 
-  document.getElementById('content').innerHTML = html;
+  document.getElementById('content').innerHTML = html || "कोई सत्संग उपलब्ध नहीं है";
+})
+.catch(err => {
+  document.getElementById('content').innerHTML = "डेटा लोड नहीं हो पाया";
+  console.error(err);
 });
 </script>
 
