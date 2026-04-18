@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>आज का सत्संग</title>
+
+<link rel="icon" href="favicon.png">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #ece5dd;
+}
+
+.header {
+  background: #075e54;
+  color: white;
+  padding: 18px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 10px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  margin-top: 15px;
+  border-radius: 14px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.date {
+  font-size: 14px;
+  color: #777;
+}
+
+.text {
+  margin-top: 10px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+audio {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.footer {
+  text-align: center;
+  margin: 20px;
+  color: #777;
+  font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🕉️ आज का सत्संग</div>
+
+<div class="container" id="content"></div>
+
+<div class="footer">सत्संग संग्रह</div>
+
+<script>
+fetch('data.json')
+.then(res => res.json())
+.then(data => {
+
+  // Latest first
+  data.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  let html = '';
+
+  data.forEach(item => {
+    let d = new Date(item.date);
+
+    let formatted = d.toLocaleDateString('hi-IN', {
+      weekday:'long',
+      year:'numeric',
+      month:'long',
+      day:'numeric'
+    });
+
+    html += `
+      <div class="card">
+        <div class="date">📅 ${formatted}</div>
+        <audio controls>
+          <source src="${item.audio}" type="audio/mpeg">
+        </audio>
+        <div class="text">${item.text}</div>
+      </div>
+    `;
+  });
+
+  document.getElementById('content').innerHTML = html;
+});
+</script>
+
+</body>
+</html>
