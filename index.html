@@ -5,152 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>आज का सत्संग</title>
 
-<link rel="icon" href="favicon.png">
-
 <style>
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #ece5dd;
-}
+body { margin:0; font-family:'Segoe UI'; background:#ece5dd; }
 
 .header {
-  background: #075e54;
-  color: white;
-  padding: 16px;
-  text-align: center;
-  position: sticky;
-  top: 0;
+  background:#075e54; color:white; text-align:center; padding:15px;
 }
 
-.header .top { font-size: 20px; font-weight: 600; }
-.header .bottom { font-size: 22px; margin-top: 4px; font-weight: bold; }
-
-.container {
-  max-width: 700px;
-  margin: auto;
-  padding: 10px;
-}
+.container { max-width:700px; margin:auto; padding:10px; }
 
 .card {
-  background: white;
-  padding: 16px;
-  margin-top: 15px;
-  border-radius: 14px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  background:white; padding:15px; margin-top:15px;
+  border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-.date { font-size: 14px; color: #777; }
+.text { white-space:pre-line; line-height:1.7; font-size:17px; }
 
-.text {
-  margin-top: 12px;
-  font-size: 18px;
-  line-height: 1.7;
-  white-space: pre-line; /* 👈 fixes paragraphing */
+.controls { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+
+button, .share {
+  padding:8px 12px; border:none; border-radius:8px;
+  cursor:pointer; font-size:14px;
 }
 
-audio {
-  width: 100%;
-  margin-top: 10px;
-}
+.play { background:#075e54; color:white; }
+.pause { background:#999; color:white; }
+.share { background:#25D366; color:white; text-decoration:none; }
 
-/* Buttons */
-.controls {
-  margin-top: 10px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.play { background: #075e54; color: white; }
-.pause { background: #999; color: white; }
-.share { background: #25D366; color: white; text-decoration: none; }
-
-.footer {
-  text-align: center;
-  margin: 20px;
-  color: #777;
-  font-size: 14px;
-}
+audio { width:100%; margin-top:10px; }
 </style>
 </head>
 
 <body>
 
 <div class="header">
-  <div class="top">॥श्रीहरि:॥</div>
-  <div class="bottom">आज का सत्संग</div>
+  <div>॥श्रीहरि:॥</div>
+  <div>आज का सत्संग</div>
 </div>
 
-<div class="container" id="content">
-  <div style="text-align:center; margin-top:20px;">लोड हो रहा है...</div>
-</div>
-
-<div class="footer">सत्संग संग्रह</div>
+<div class="container" id="content"></div>
 
 <script>
 fetch('data.json')
 .then(res => res.json())
 .then(data => {
 
-  data.sort((a, b) => new Date(b.date) - new Date(a.date));
+  data.sort((a,b)=> new Date(b.date)-new Date(a.date));
 
-  let html = '';
+  let html='';
 
-  data.forEach((item, index) => {
-    let d = new Date(item.date);
+  data.forEach((item,i)=>{
 
-    let formatted = d.toLocaleDateString('hi-IN', {
-      weekday:'long',
-      year:'numeric',
-      month:'long',
-      day:'numeric'
+    let d=new Date(item.date);
+    let formatted=d.toLocaleDateString('hi-IN',{
+      weekday:'long',year:'numeric',month:'long',day:'numeric'
     });
 
-    let shareText = `🕉️ आज का सत्संग\n\n${formatted}\n\n${item.text}\n\n${window.location.href}`;
+    let shareText = `॥श्रीहरि:॥ आज का सत्संग\n\n${formatted}\n\n${item.text}\n\n${window.location.href}`;
 
-    html += `
-      <div class="card">
-        <div class="date">📅 ${formatted}</div>
+    html+=`
+    <div class="card">
+      <div>📅 ${formatted}</div>
 
-        <audio id="audio${index}" src="${item.audio}"></audio>
+      <!-- AUDIO WITH TIMELINE -->
+      <audio id="audio${i}" controls src="${item.audio}"></audio>
 
-        <div class="controls">
-          <button class="btn play" onclick="playAudio(${index})">▶️ सत्संग सुने</button>
-          <button class="btn pause" onclick="pauseAudio(${index})">⏸️ Pause</button>
+      <div class="controls">
+        <button class="play" onclick="playAudio(${i})">▶️ सत्संग सुने</button>
+        <button class="pause" onclick="pauseAudio(${i})">⏸️ Pause</button>
 
-          <a 
-            href="https://wa.me/?text=${encodeURIComponent(shareText)}" 
-            target="_blank"
-            class="btn share"
-          >
-            📤 WhatsApp
-          </a>
-        </div>
-
-        <div class="text">${item.text}</div>
+        <a href="https://wa.me/?text=${encodeURIComponent(shareText)}"
+           target="_blank"
+           class="share">
+           📤 WhatsApp पर शेयर करें
+        </a>
       </div>
+
+      <div class="text">${item.text}</div>
+    </div>
     `;
   });
 
-  document.getElementById('content').innerHTML = html || "कोई सत्संग उपलब्ध नहीं है";
+  document.getElementById('content').innerHTML=html;
 });
 
-// Play / Pause functions
-function playAudio(i) {
-  document.getElementById("audio" + i).play();
+function playAudio(i){
+  document.getElementById("audio"+i).play();
 }
 
-function pauseAudio(i) {
-  document.getElementById("audio" + i).pause();
+function pauseAudio(i){
+  document.getElementById("audio"+i).pause();
 }
 </script>
 
