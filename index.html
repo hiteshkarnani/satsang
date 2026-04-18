@@ -17,12 +17,21 @@ body {
 .header {
   background: #075e54;
   color: white;
-  padding: 18px;
+  padding: 16px;
   text-align: center;
-  font-size: 24px;
-  font-weight: bold;
   position: sticky;
   top: 0;
+}
+
+.header .top {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.header .bottom {
+  font-size: 22px;
+  margin-top: 4px;
+  font-weight: bold;
 }
 
 .container {
@@ -37,11 +46,6 @@ body {
   margin-top: 15px;
   border-radius: 14px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-2px);
 }
 
 .date {
@@ -60,6 +64,17 @@ audio {
   margin-top: 10px;
 }
 
+.share-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #25D366;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 .footer {
   text-align: center;
   margin: 20px;
@@ -71,7 +86,10 @@ audio {
 
 <body>
 
-<div class="header">🕉️ आज का सत्संग</div>
+<div class="header">
+  <div class="top">॥श्रीहरि:॥</div>
+  <div class="bottom">आज का सत्संग</div>
+</div>
 
 <div class="container" id="content">
   <div style="text-align:center; margin-top:20px;">लोड हो रहा है...</div>
@@ -99,11 +117,23 @@ fetch('data.json')
       day:'numeric'
     });
 
+    let shareText = `🕉️ आज का सत्संग\n\n${formatted}\n\n${item.text}\n\n${window.location.href}`;
+
     html += `
       <div class="card">
         <div class="date">📅 ${formatted}</div>
+
         <audio controls src="${item.audio}"></audio>
+
         <div class="text">${item.text}</div>
+
+        <a 
+          href="https://wa.me/?text=${encodeURIComponent(shareText)}" 
+          target="_blank"
+          class="share-btn"
+        >
+          📤 WhatsApp पर शेयर करें
+        </a>
       </div>
     `;
   });
