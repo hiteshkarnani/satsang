@@ -38,13 +38,17 @@ body {
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
-.date { font-size: 14px; color: #777; }
+.date {
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+}
 
 .text {
   margin-top: 12px;
   font-size: 18px;
   line-height: 1.7;
-  white-space: pre-line; /* preserves formatting */
+  white-space: pre-line;
 }
 
 audio {
@@ -94,7 +98,9 @@ audio {
 <div class="footer">सत्संग संग्रह</div>
 
 <script>
-fetch('data.json')
+
+// 🔥 CACHE FIX INCLUDED
+fetch('data.json?v=' + new Date().getTime())
 .then(res => res.json())
 .then(data => {
 
@@ -105,18 +111,16 @@ fetch('data.json')
   data.forEach((item, index) => {
     let d = new Date(item.date);
 
-    let formatted = d.toLocaleDateString('hi-IN', {
-      weekday:'long',
-      year:'numeric',
-      month:'long',
-      day:'numeric'
-    });
+    let days = ["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
+    let months = ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"];
+
+    let formatted = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 
     let shareText = `॥श्रीहरि:॥ आज का सत्संग\n\n${formatted}\n\n${item.text}\n\n${window.location.href}`;
 
     html += `
       <div class="card">
-        <div class="date">📅 ${formatted}</div>
+        <div class="date">${formatted}</div>
 
         <audio id="audio${index}" controls src="${item.audio}"></audio>
 
@@ -140,7 +144,7 @@ fetch('data.json')
 
   document.getElementById('content').innerHTML = html;
 
-  // 🔥 CONTENT-SAFE RENDERING (NO CHANGE TO TEXT)
+  // CONTENT SAFE
   data.forEach((item, index) => {
     document.getElementById("text" + index).innerText = item.text;
   });
@@ -158,6 +162,7 @@ function playAudio(i) {
 function pauseAudio(i) {
   document.getElementById("audio" + i).pause();
 }
+
 </script>
 
 </body>
