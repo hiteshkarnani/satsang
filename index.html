@@ -99,7 +99,7 @@ audio {
 
 <script>
 
-// 🔥 CACHE FIX INCLUDED
+// 🔥 CACHE FIX
 fetch('data.json?v=' + new Date().getTime())
 .then(res => res.json())
 .then(data => {
@@ -144,9 +144,9 @@ fetch('data.json?v=' + new Date().getTime())
 
   document.getElementById('content').innerHTML = html;
 
-  // CONTENT SAFE
+  // 🔥 CONTENT-SAFE + REMOVE * ONLY FROM DISPLAY
   data.forEach((item, index) => {
-    document.getElementById("text" + index).innerText = item.text;
+    document.getElementById("text" + index).innerText = item.text.replace(/\*/g, '');
   });
 
 })
