@@ -97,7 +97,7 @@ audio {
 
 <script>
 
-// CACHE FIX
+// FETCH DATA
 fetch('data.json?v=' + new Date().getTime())
 .then(res => res.json())
 .then(data => {
@@ -118,7 +118,7 @@ fetch('data.json?v=' + new Date().getTime())
       <div class="card">
         <div class="date">${formatted}</div>
 
-        <audio id="audio${index}" controls src="${item.audio}"></audio>
+        <audio id="audio${index}" controls ${index === 0 ? 'autoplay' : ''} src="${item.audio}"></audio>
 
         <div class="controls">
           <button class="btn play" onclick="playAudio(${index})">▶️ सत्संग सुने</button>
@@ -140,7 +140,7 @@ fetch('data.json?v=' + new Date().getTime())
 
   document.getElementById('content').innerHTML = html;
 
-  // LOAD TEXT FILE SAFELY
+  // LOAD TEXT FILE
   data.forEach((item, index) => {
 
     fetch(item.text + '?v=' + new Date().getTime())
@@ -148,28 +148,30 @@ fetch('data.json?v=' + new Date().getTime())
       .then(txt => {
 
         let cleanText = txt.replace(/\*/g, '');
-
         document.getElementById("text" + index).innerText = cleanText;
 
-        // WhatsApp share setup
         let shareMsg = `॥श्रीहरि:॥ आज का सत्संग\n\n${cleanText}\n\n${window.location.href}`;
 
         document.getElementById("share" + index).href =
           "https://wa.me/?text=" + encodeURIComponent(shareMsg);
 
-      })
-      .catch(() => {
-        document.getElementById("text" + index).innerText = "सत्संग लोड नहीं हो पाया";
       });
 
   });
 
-})
-.catch(err => {
-  document.getElementById('content').innerHTML = "डेटा लोड नहीं हो पाया";
-  console.error(err);
+  // 🔥 FORCE AUTOPLAY (SAFE)
+  setTimeout(() => {
+    const firstAudio = document.getElementById("audio0");
+    if (firstAudio) {
+      firstAudio.play().catch(() => {
+        console.log("Autoplay blocked");
+      });
+    }
+  }, 500);
+
 });
 
+// CONTROLS
 function playAudio(i) {
   document.getElementById("audio" + i).play();
 }
