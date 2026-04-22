@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>आज का सत्संग</title>
 
-<link rel="icon" href="favicon.png">
-
 <style>
 body {
   margin: 0;
@@ -99,7 +97,7 @@ audio {
 
 <script>
 
-// 🔥 CACHE FIX
+// CACHE FIX
 fetch('data.json?v=' + new Date().getTime())
 .then(res => res.json())
 .then(data => {
@@ -116,8 +114,6 @@ fetch('data.json?v=' + new Date().getTime())
 
     let formatted = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 
-    let shareText = `॥श्रीहरि:॥ आज का सत्संग\n\n${formatted}\n\n${item.text}\n\n${window.location.href}`;
-
     html += `
       <div class="card">
         <div class="date">${formatted}</div>
@@ -129,7 +125,7 @@ fetch('data.json?v=' + new Date().getTime())
           <button class="btn pause" onclick="pauseAudio(${index})">⏸️ Pause</button>
 
           <a 
-            href="https://wa.me/?text=${encodeURIComponent(shareText)}" 
+            id="share${index}"
             target="_blank"
             class="btn share"
           >
@@ -137,16 +133,35 @@ fetch('data.json?v=' + new Date().getTime())
           </a>
         </div>
 
-        <div class="text" id="text${index}"></div>
+        <div class="text" id="text${index}">लोड हो रहा है...</div>
       </div>
     `;
   });
 
   document.getElementById('content').innerHTML = html;
 
-  // 🔥 CONTENT-SAFE + REMOVE * ONLY FROM DISPLAY
+  // LOAD TEXT FILE SAFELY
   data.forEach((item, index) => {
-    document.getElementById("text" + index).innerText = item.text.replace(/\*/g, '');
+
+    fetch(item.text + '?v=' + new Date().getTime())
+      .then(res => res.text())
+      .then(txt => {
+
+        let cleanText = txt.replace(/\*/g, '');
+
+        document.getElementById("text" + index).innerText = cleanText;
+
+        // WhatsApp share setup
+        let shareMsg = `॥श्रीहरि:॥ आज का सत्संग\n\n${cleanText}\n\n${window.location.href}`;
+
+        document.getElementById("share" + index).href =
+          "https://wa.me/?text=" + encodeURIComponent(shareMsg);
+
+      })
+      .catch(() => {
+        document.getElementById("text" + index).innerText = "सत्संग लोड नहीं हो पाया";
+      });
+
   });
 
 })
