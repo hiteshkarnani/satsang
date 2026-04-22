@@ -118,10 +118,8 @@ fetch('data.json?v=' + new Date().getTime())
       <div class="card">
         <div class="date">${formatted}</div>
 
-        <audio id="audio${index}" controls ${index === 0 ? 'autoplay' : ''} src="${item.audio}"></audio>
-
         <div class="controls">
-          <button class="btn play" onclick="playAudio(${index})">▶️ सत्संग सुने</button>
+          <button class="btn play" onclick="startAudio(${index})">▶️ सत्संग सुने</button>
           <button class="btn pause" onclick="pauseAudio(${index})">⏸️ Pause</button>
 
           <a 
@@ -132,6 +130,8 @@ fetch('data.json?v=' + new Date().getTime())
             📤 WhatsApp पर शेयर करें
           </a>
         </div>
+
+        <audio id="audio${index}" src="${item.audio}" style="display:none;"></audio>
 
         <div class="text" id="text${index}">लोड हो रहा है...</div>
       </div>
@@ -159,23 +159,20 @@ fetch('data.json?v=' + new Date().getTime())
 
   });
 
-  // 🔥 FORCE AUTOPLAY (SAFE)
-  setTimeout(() => {
-    const firstAudio = document.getElementById("audio0");
-    if (firstAudio) {
-      firstAudio.play().catch(() => {
-        console.log("Autoplay blocked");
-      });
-    }
-  }, 500);
-
+})
+.catch(err => {
+  document.getElementById('content').innerHTML = "डेटा लोड नहीं हो पाया";
+  console.error(err);
 });
 
-// CONTROLS
-function playAudio(i) {
-  document.getElementById("audio" + i).play();
+// START AUDIO (SHOW + PLAY)
+function startAudio(i) {
+  const audio = document.getElementById("audio" + i);
+  audio.style.display = "block";
+  audio.play();
 }
 
+// PAUSE AUDIO
 function pauseAudio(i) {
   document.getElementById("audio" + i).pause();
 }
