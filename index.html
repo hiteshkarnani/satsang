@@ -97,7 +97,7 @@ audio {
 
 <script>
 
-// FETCH DATA
+// LOAD DATA
 fetch('data.json?v=' + new Date().getTime())
 .then(res => res.json())
 .then(data => {
@@ -131,7 +131,8 @@ fetch('data.json?v=' + new Date().getTime())
           </a>
         </div>
 
-        <audio id="audio${index}" src="${item.audio}" style="display:none;"></audio>
+        <!-- FIXED AUDIO -->
+        <audio id="audio${index}" controls preload="auto" src="${item.audio}" style="display:none;"></audio>
 
         <div class="text" id="text${index}">लोड हो रहा है...</div>
       </div>
@@ -165,14 +166,20 @@ fetch('data.json?v=' + new Date().getTime())
   console.error(err);
 });
 
-// START AUDIO (SHOW + PLAY)
+
+// ▶️ PLAY (FIXED)
 function startAudio(i) {
   const audio = document.getElementById("audio" + i);
+
   audio.style.display = "block";
-  audio.play();
+  audio.load();   // 🔥 ensures proper loading
+  audio.play().catch(e => {
+    console.log("Play error:", e);
+  });
 }
 
-// PAUSE AUDIO
+
+// ⏸️ PAUSE
 function pauseAudio(i) {
   document.getElementById("audio" + i).pause();
 }
